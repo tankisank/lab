@@ -1,0 +1,16 @@
+gedit mapper1.py
+gedit reducer1.py
+gedit wodcnt.txt
+cat wodcnt.txt | python mapper1.py | sort -k1,1 | python reducer1.py
+jps
+start-all.sh
+jps
+hdfs dfs -mkdir /yourname
+hdfs dfs -ls /
+hdfs dfs -rm /yourname
+hdfs dfs -copyFromLocal /home/hdoop/wodcnt.txt /yourname
+hdfs dfs -ls /yourname
+chmod 777 mapper1.py reducer1.py
+hadoop jar /home/hdoop/hadoop-streaming-2.7.3.jar -input /yourname/wodcnt.txt -output /yourname/output -mapper /home/hdoop/mapper1.py -reducer /home/hdoop/reducer1.py
+hdfs dfs -ls /yourname/output
+hdfs dfs -cat /yourname/output/part-00000

@@ -1,0 +1,566 @@
+hdoop@admin123-VirtualBox:~$ ls
+124156079              Downloads                   mapper1.py  reducer1.py
+apache-hive-3.1.2-bin  examples.desktop            Music       Templates
+Desktop                hadoop-3.3.2                Pictures    tmpdata
+dfsdata                hadoop-3.3.2.tar.gz         pig-0.16.0  Videos
+Documents              hadoop-streaming-2.7.3.jar  Public      wodcnt.txt
+hdoop@admin123-VirtualBox:~$ cat wodcnt.txt | python mapper1.py
+Hello	1
+how	1
+are	1
+you	1
+how	1
+is	1
+your	1
+health	1
+how	1
+do	1
+you	1
+do	1
+hdoop@admin123-VirtualBox:~$ cat wodcnt.txt | python mapper1.py | sort -k1,1 | python reducer1.py
+are	1
+do	2
+health	1
+Hello	1
+how	3
+is	1
+you	2
+your	1
+hdoop@admin123-VirtualBox:~$ jps
+10081 Jps
+6001 SecondaryNameNode
+5618 NameNode
+6249 ResourceManager
+6397 NodeManager
+5774 DataNode
+hdoop@admin123-VirtualBox:~$ start-all.sh
+WARNING: Attempting to start all Apache Hadoop daemons as hdoop in 10 seconds.
+WARNING: This is not a recommended production deployment configuration.
+WARNING: Use CTRL-C to abort.
+Starting namenodes on [localhost]
+localhost: namenode is running as process 5618.  Stop it first and ensure /tmp/hadoop-hdoop-namenode.pid file is empty before retry.
+Starting datanodes
+localhost: datanode is running as process 5774.  Stop it first and ensure /tmp/hadoop-hdoop-datanode.pid file is empty before retry.
+Starting secondary namenodes [admin123-VirtualBox]
+admin123-VirtualBox: secondarynamenode is running as process 6001.  Stop it first and ensure /tmp/hadoop-hdoop-secondarynamenode.pid file is empty before retry.
+Starting resourcemanager
+resourcemanager is running as process 6249.  Stop it first and ensure /tmp/hadoop-hdoop-resourcemanager.pid file is empty before retry.
+Starting nodemanagers
+localhost: nodemanager is running as process 6397.  Stop it first and ensure /tmp/hadoop-hdoop-nodemanager.pid file is empty before retry.
+hdoop@admin123-VirtualBox:~$ hdfs dfs -mkdir /Hdpkrm
+mkdir: `/Hdpkrm': File exists
+hdoop@admin123-VirtualBox:~$ hdfs dfs -mkdir /me
+hdoop@admin123-VirtualBox:~$ hdfs dfs -ls /
+Found 5 items
+drwxr-xr-x   - hdoop supergroup          0 2023-08-07 10:31 /124015096
+drwxr-xr-x   - hdoop supergroup          0 2023-08-09 12:10 /Hdpkrm
+drwxr-xr-x   - hdoop supergroup          0 2023-08-09 12:17 /me
+drwxrwxr-x   - hdoop supergroup          0 2023-08-09 12:02 /tmp
+drwxr-xr-x   - hdoop supergroup          0 2023-07-22 15:37 /user
+hdoop@admin123-VirtualBox:~$ hdfs dfs -rm /me
+hdoop@admin123-VirtualBox:~$ hdfs dfs -copyFromLocal /home/hdoop/wodcnt.txt /me
+hdoop@admin123-VirtualBox:~$ hdfs dfs -ls /me
+Found 1 items
+-rw-r--r--   1 hdoop supergroup         51 2023-08-09 12:18 /me/wodcnt.txt
+hdoop@admin123-VirtualBox:~$ chmod 777 mapper1.py reducer1.py
+hdoop@admin123-VirtualBox:~$ ls -l
+total 623908
+drwxrwxr-x  2 hdoop hdoop      4096 Aug  9 11:48 124156079
+drwxrwxr-x 10 hdoop hdoop      4096 Jul 22 12:58 apache-hive-3.1.2-bin
+drwxr-xr-x  2 hdoop hdoop      4096 Aug  9 12:13 Desktop
+drwxrwxr-x  3 hdoop hdoop      4096 Apr  6  2022 dfsdata
+drwxr-xr-x  2 hdoop hdoop      4096 Jul  4 12:12 Documents
+drwxr-xr-x  3 hdoop hdoop      4096 Aug  9 12:01 Downloads
+-rw-r--r--  1 hdoop hdoop      8980 Apr  6  2022 examples.desktop
+drwxr-xr-x 11 hdoop hdoop      4096 Apr  6  2022 hadoop-3.3.2
+-rw-rw-r--  1 hdoop hdoop 638660563 Mar  3  2022 hadoop-3.3.2.tar.gz
+-rw-rw-rw-  1 hdoop hdoop    129201 Aug  9 06:29 hadoop-streaming-2.7.3.jar
+-rwxrwxrwx  1 hdoop hdoop       137 Aug  9 11:39 mapper1.py
+drwxr-xr-x  2 hdoop hdoop      4096 Jul  4 12:12 Music
+drwxr-xr-x  2 hdoop hdoop      4096 Jul  4 12:12 Pictures
+drwxr-xr-x 16 hdoop hdoop      4096 Jun  2  2016 pig-0.16.0
+drwxr-xr-x  2 hdoop hdoop      4096 Jul  4 12:12 Public
+-rwxrwxrwx  1 hdoop hdoop       947 Aug  9 11:48 reducer1.py
+drwxr-xr-x  2 hdoop hdoop      4096 Jul  4 12:12 Templates
+drwxrwxr-x  4 hdoop hdoop      4096 Apr  6  2022 tmpdata
+drwxr-xr-x  2 hdoop hdoop      4096 Jul  4 12:12 Videos
+-rw-rw-r--  1 hdoop hdoop        51 Aug  9 11:45 wodcnt.txt
+hdoop@admin123-VirtualBox:~$ hadoop jar /home/hdoop/hadoop-streaming-2.7.3.jar -input /me/wodcnt.txt -output /me/output -mapper /home/hdoop/mapper1.py -reducer /home/hdoop/reducer1.py
+packageJobJar: [/tmp/hadoop-unjar8874586004829877899/] [] /tmp/streamjob9196604055970612691.jar tmpDir=null
+2023-08-09 12:19:26,118 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:19:26,370 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:19:26,576 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/hdoop/.staging/job_1691561960172_0003
+2023-08-09 12:19:26,855 INFO mapred.FileInputFormat: Total input files to process : 1
+2023-08-09 12:19:26,924 INFO mapreduce.JobSubmitter: number of splits:2
+2023-08-09 12:19:27,125 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1691561960172_0003
+2023-08-09 12:19:27,125 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2023-08-09 12:19:27,336 INFO conf.Configuration: resource-types.xml not found
+2023-08-09 12:19:27,337 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2023-08-09 12:19:27,441 INFO impl.YarnClientImpl: Submitted application application_1691561960172_0003
+2023-08-09 12:19:27,559 INFO mapreduce.Job: The url to track the job: http://admin123-VirtualBox:8088/proxy/application_1691561960172_0003/
+2023-08-09 12:19:27,573 INFO mapreduce.Job: Running job: job_1691561960172_0003
+2023-08-09 12:19:33,743 INFO mapreduce.Job: Job job_1691561960172_0003 running in uber mode : false
+2023-08-09 12:19:33,747 INFO mapreduce.Job:  map 0% reduce 0%
+2023-08-09 12:19:39,846 INFO mapreduce.Job: Task Id : attempt_1691561960172_0003_m_000000_0, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:19:40,913 INFO mapreduce.Job: Task Id : attempt_1691561960172_0003_m_000001_0, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:19:45,945 INFO mapreduce.Job: Task Id : attempt_1691561960172_0003_m_000000_1, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:19:46,952 INFO mapreduce.Job: Task Id : attempt_1691561960172_0003_m_000001_1, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:19:52,996 INFO mapreduce.Job: Task Id : attempt_1691561960172_0003_m_000000_2, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:19:53,004 INFO mapreduce.Job: Task Id : attempt_1691561960172_0003_m_000001_2, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:20:00,057 INFO mapreduce.Job:  map 100% reduce 100%
+2023-08-09 12:20:00,065 INFO mapreduce.Job: Job job_1691561960172_0003 failed with state FAILED due to: Task failed task_1691561960172_0003_m_000000
+Job failed as tasks failed. failedMaps:1 failedReduces:0 killedMaps:0 killedReduces: 0
+
+2023-08-09 12:20:00,186 INFO mapreduce.Job: Counters: 14
+	Job Counters 
+		Failed map tasks=7
+		Killed map tasks=1
+		Killed reduce tasks=1
+		Launched map tasks=8
+		Other local map tasks=6
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=36627
+		Total time spent by all reduces in occupied slots (ms)=0
+		Total time spent by all map tasks (ms)=36627
+		Total vcore-milliseconds taken by all map tasks=36627
+		Total megabyte-milliseconds taken by all map tasks=37506048
+	Map-Reduce Framework
+		CPU time spent (ms)=0
+		Physical memory (bytes) snapshot=0
+		Virtual memory (bytes) snapshot=0
+2023-08-09 12:20:00,187 ERROR streaming.StreamJob: Job not successful!
+Streaming Command Failed!
+hdoop@admin123-VirtualBox:~$ hdfs dfs -ls /me/output
+hdoop@admin123-VirtualBox:~$ hadoop jar /home/hdoop/hadoop-streaming-2.7.3.jar -input /me/wodcnt.txt -output /me/output -mapper /home/hdoop/mapper1.py -reducer /home/hdoop/reducer1.py
+packageJobJar: [/tmp/hadoop-unjar8792847010846597874/] [] /tmp/streamjob7687161119186949528.jar tmpDir=null
+2023-08-09 12:32:20,301 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:32:20,572 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:32:20,676 ERROR streaming.StreamJob: Error Launching job : Output directory hdfs://127.0.0.1:9000/me/output already exists
+Streaming Command Failed!
+hdoop@admin123-VirtualBox:~$ hadoop jar /home/hdoop/hadoop-streaming-2.7.3.jar -input /me/wodcnt.txt -output1 /me/output -mapper /home/hdoop/mapper1.py -reducer /home/hdoop/reducer1.py
+Required argument: -output 
+Try -help for more information
+Streaming Command Failed!
+hdoop@admin123-VirtualBox:~$ hadoop jar /home/hdoop/hadoop-streaming-2.7.3.jar -input /me/wodcnt.txt -output /me/output1 -mapper /home/hdoop/mapper1.py -reducer /home/hdoop/reducer1.py
+packageJobJar: [/tmp/hadoop-unjar835656086409533403/] [] /tmp/streamjob6652209823977475902.jar tmpDir=null
+2023-08-09 12:32:50,371 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:32:50,614 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:32:50,858 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/hdoop/.staging/job_1691561960172_0004
+2023-08-09 12:32:51,149 INFO mapred.FileInputFormat: Total input files to process : 1
+2023-08-09 12:32:51,224 INFO mapreduce.JobSubmitter: number of splits:2
+2023-08-09 12:32:51,435 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1691561960172_0004
+2023-08-09 12:32:51,435 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2023-08-09 12:32:51,650 INFO conf.Configuration: resource-types.xml not found
+2023-08-09 12:32:51,650 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2023-08-09 12:32:51,748 INFO impl.YarnClientImpl: Submitted application application_1691561960172_0004
+2023-08-09 12:32:51,806 INFO mapreduce.Job: The url to track the job: http://admin123-VirtualBox:8088/proxy/application_1691561960172_0004/
+2023-08-09 12:32:51,812 INFO mapreduce.Job: Running job: job_1691561960172_0004
+2023-08-09 12:32:58,929 INFO mapreduce.Job: Job job_1691561960172_0004 running in uber mode : false
+2023-08-09 12:32:58,930 INFO mapreduce.Job:  map 0% reduce 0%
+2023-08-09 12:33:05,026 INFO mapreduce.Job: Task Id : attempt_1691561960172_0004_m_000001_0, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:33:06,074 INFO mapreduce.Job: Task Id : attempt_1691561960172_0004_m_000000_0, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:33:12,133 INFO mapreduce.Job: Task Id : attempt_1691561960172_0004_m_000001_1, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:33:12,139 INFO mapreduce.Job: Task Id : attempt_1691561960172_0004_m_000000_1, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:33:18,205 INFO mapreduce.Job: Task Id : attempt_1691561960172_0004_m_000001_2, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:33:19,212 INFO mapreduce.Job: Task Id : attempt_1691561960172_0004_m_000000_2, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeMapper.close(PipeMapper.java:130)
+	at org.apache.hadoop.mapred.MapRunner.run(MapRunner.java:61)
+	at org.apache.hadoop.streaming.PipeMapRunner.run(PipeMapRunner.java:34)
+	at org.apache.hadoop.mapred.MapTask.runOldMapper(MapTask.java:466)
+	at org.apache.hadoop.mapred.MapTask.run(MapTask.java:350)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:33:23,237 INFO mapreduce.Job:  map 100% reduce 100%
+2023-08-09 12:33:23,254 INFO mapreduce.Job: Job job_1691561960172_0004 failed with state FAILED due to: Task failed task_1691561960172_0004_m_000001
+Job failed as tasks failed. failedMaps:1 failedReduces:0 killedMaps:0 killedReduces: 0
+
+2023-08-09 12:33:23,354 INFO mapreduce.Job: Counters: 14
+	Job Counters 
+		Failed map tasks=7
+		Killed map tasks=1
+		Killed reduce tasks=1
+		Launched map tasks=8
+		Other local map tasks=6
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=31003
+		Total time spent by all reduces in occupied slots (ms)=0
+		Total time spent by all map tasks (ms)=31003
+		Total vcore-milliseconds taken by all map tasks=31003
+		Total megabyte-milliseconds taken by all map tasks=31747072
+	Map-Reduce Framework
+		CPU time spent (ms)=0
+		Physical memory (bytes) snapshot=0
+		Virtual memory (bytes) snapshot=0
+2023-08-09 12:33:23,355 ERROR streaming.StreamJob: Job not successful!
+Streaming Command Failed!
+hdoop@admin123-VirtualBox:~$ hadoop jar /home/hdoop/hadoop-streaming-2.7.3.jar -input /me/wodcnt.txt -output /me/output1 -mapper /home/hdoop/mapper1.py -reducer /home/hdoop/reducer1.py
+packageJobJar: [/tmp/hadoop-unjar7182594769766440209/] [] /tmp/streamjob4205297987729733139.jar tmpDir=null
+2023-08-09 12:36:12,896 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:36:13,126 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:36:13,227 ERROR streaming.StreamJob: Error Launching job : Output directory hdfs://127.0.0.1:9000/me/output1 already exists
+Streaming Command Failed!
+hdoop@admin123-VirtualBox:~$ hadoop jar /home/hdoop/hadoop-streaming-2.7.3.jar -input /me/wodcnt.txt -output /me/output2 -mapper /home/hdoop/mapper1.py -reducer /home/hdoop/reducer1.py
+packageJobJar: [/tmp/hadoop-unjar3206920377771601679/] [] /tmp/streamjob112148039325902373.jar tmpDir=null
+2023-08-09 12:36:23,753 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:36:23,969 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:36:24,191 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/hdoop/.staging/job_1691561960172_0005
+2023-08-09 12:36:24,503 INFO mapred.FileInputFormat: Total input files to process : 1
+2023-08-09 12:36:24,589 INFO mapreduce.JobSubmitter: number of splits:2
+2023-08-09 12:36:24,761 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1691561960172_0005
+2023-08-09 12:36:24,761 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2023-08-09 12:36:24,974 INFO conf.Configuration: resource-types.xml not found
+2023-08-09 12:36:24,974 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2023-08-09 12:36:25,073 INFO impl.YarnClientImpl: Submitted application application_1691561960172_0005
+2023-08-09 12:36:25,139 INFO mapreduce.Job: The url to track the job: http://admin123-VirtualBox:8088/proxy/application_1691561960172_0005/
+2023-08-09 12:36:25,139 INFO mapreduce.Job: Running job: job_1691561960172_0005
+2023-08-09 12:36:31,269 INFO mapreduce.Job: Job job_1691561960172_0005 running in uber mode : false
+2023-08-09 12:36:31,271 INFO mapreduce.Job:  map 0% reduce 0%
+2023-08-09 12:36:38,439 INFO mapreduce.Job:  map 50% reduce 0%
+2023-08-09 12:36:39,462 INFO mapreduce.Job:  map 100% reduce 0%
+2023-08-09 12:36:43,502 INFO mapreduce.Job: Task Id : attempt_1691561960172_0005_r_000000_0, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeReducer.close(PipeReducer.java:134)
+	at org.apache.hadoop.mapred.ReduceTask.runOldReducer(ReduceTask.java:454)
+	at org.apache.hadoop.mapred.ReduceTask.run(ReduceTask.java:393)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:36:48,587 INFO mapreduce.Job: Task Id : attempt_1691561960172_0005_r_000000_1, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeReducer.close(PipeReducer.java:134)
+	at org.apache.hadoop.mapred.ReduceTask.runOldReducer(ReduceTask.java:454)
+	at org.apache.hadoop.mapred.ReduceTask.run(ReduceTask.java:393)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:36:52,642 INFO mapreduce.Job: Task Id : attempt_1691561960172_0005_r_000000_2, Status : FAILED
+Error: java.lang.RuntimeException: PipeMapRed.waitOutputThreads(): subprocess failed with code 2
+	at org.apache.hadoop.streaming.PipeMapRed.waitOutputThreads(PipeMapRed.java:322)
+	at org.apache.hadoop.streaming.PipeMapRed.mapRedFinished(PipeMapRed.java:535)
+	at org.apache.hadoop.streaming.PipeReducer.close(PipeReducer.java:134)
+	at org.apache.hadoop.mapred.ReduceTask.runOldReducer(ReduceTask.java:454)
+	at org.apache.hadoop.mapred.ReduceTask.run(ReduceTask.java:393)
+	at org.apache.hadoop.mapred.YarnChild$2.run(YarnChild.java:178)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1878)
+	at org.apache.hadoop.mapred.YarnChild.main(YarnChild.java:172)
+
+2023-08-09 12:36:58,704 INFO mapreduce.Job:  map 100% reduce 100%
+2023-08-09 12:36:59,743 INFO mapreduce.Job: Job job_1691561960172_0005 failed with state FAILED due to: Task failed task_1691561960172_0005_r_000000
+Job failed as tasks failed. failedMaps:0 failedReduces:1 killedMaps:0 killedReduces: 0
+
+2023-08-09 12:36:59,854 INFO mapreduce.Job: Counters: 40
+	File System Counters
+		FILE: Number of bytes read=0
+		FILE: Number of bytes written=554923
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=251
+		HDFS: Number of bytes written=0
+		HDFS: Number of read operations=6
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=0
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Failed reduce tasks=4
+		Launched map tasks=2
+		Launched reduce tasks=4
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=10312
+		Total time spent by all reduces in occupied slots (ms)=9276
+		Total time spent by all map tasks (ms)=10312
+		Total time spent by all reduce tasks (ms)=9276
+		Total vcore-milliseconds taken by all map tasks=10312
+		Total vcore-milliseconds taken by all reduce tasks=9276
+		Total megabyte-milliseconds taken by all map tasks=10559488
+		Total megabyte-milliseconds taken by all reduce tasks=9498624
+	Map-Reduce Framework
+		Map input records=3
+		Map output records=12
+		Map output bytes=75
+		Map output materialized bytes=111
+		Input split bytes=174
+		Combine input records=0
+		Spilled Records=12
+		Failed Shuffles=0
+		Merged Map outputs=0
+		GC time elapsed (ms)=159
+		CPU time spent (ms)=730
+		Physical memory (bytes) snapshot=460341248
+		Virtual memory (bytes) snapshot=5076516864
+		Total committed heap usage (bytes)=335683584
+		Peak Map Physical memory (bytes)=230305792
+		Peak Map Virtual memory (bytes)=2538258432
+	File Input Format Counters 
+		Bytes Read=77
+2023-08-09 12:36:59,856 ERROR streaming.StreamJob: Job not successful!
+Streaming Command Failed!
+hdoop@admin123-VirtualBox:~$ hadoop jar /home/hdoop/hadoop-streaming-2.7.3.jar -input /me/wodcnt.txt -output /me/output3 -mapper /home/hdoop/mapper1.py -reducer /home/hdoop/reducer1.py
+packageJobJar: [/tmp/hadoop-unjar3414730231158184081/] [] /tmp/streamjob1516324844530560212.jar tmpDir=null
+2023-08-09 12:38:28,045 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:38:28,273 INFO client.DefaultNoHARMFailoverProxyProvider: Connecting to ResourceManager at /127.0.0.1:8032
+2023-08-09 12:38:28,485 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/hdoop/.staging/job_1691561960172_0006
+2023-08-09 12:38:28,748 INFO mapred.FileInputFormat: Total input files to process : 1
+2023-08-09 12:38:28,856 INFO mapreduce.JobSubmitter: number of splits:2
+2023-08-09 12:38:29,052 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1691561960172_0006
+2023-08-09 12:38:29,052 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2023-08-09 12:38:29,267 INFO conf.Configuration: resource-types.xml not found
+2023-08-09 12:38:29,270 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2023-08-09 12:38:29,360 INFO impl.YarnClientImpl: Submitted application application_1691561960172_0006
+2023-08-09 12:38:29,415 INFO mapreduce.Job: The url to track the job: http://admin123-VirtualBox:8088/proxy/application_1691561960172_0006/
+2023-08-09 12:38:29,421 INFO mapreduce.Job: Running job: job_1691561960172_0006
+2023-08-09 12:38:36,553 INFO mapreduce.Job: Job job_1691561960172_0006 running in uber mode : false
+2023-08-09 12:38:36,556 INFO mapreduce.Job:  map 0% reduce 0%
+2023-08-09 12:38:43,668 INFO mapreduce.Job:  map 50% reduce 0%
+2023-08-09 12:38:44,690 INFO mapreduce.Job:  map 100% reduce 0%
+2023-08-09 12:38:49,731 INFO mapreduce.Job:  map 100% reduce 100%
+2023-08-09 12:38:49,761 INFO mapreduce.Job: Job job_1691561960172_0006 completed successfully
+2023-08-09 12:38:49,907 INFO mapreduce.Job: Counters: 54
+	File System Counters
+		FILE: Number of bytes read=105
+		FILE: Number of bytes written=832382
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=251
+		HDFS: Number of bytes written=52
+		HDFS: Number of read operations=11
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+		HDFS: Number of bytes read erasure-coded=0
+	Job Counters 
+		Launched map tasks=2
+		Launched reduce tasks=1
+		Data-local map tasks=2
+		Total time spent by all maps in occupied slots (ms)=11204
+		Total time spent by all reduces in occupied slots (ms)=2927
+		Total time spent by all map tasks (ms)=11204
+		Total time spent by all reduce tasks (ms)=2927
+		Total vcore-milliseconds taken by all map tasks=11204
+		Total vcore-milliseconds taken by all reduce tasks=2927
+		Total megabyte-milliseconds taken by all map tasks=11472896
+		Total megabyte-milliseconds taken by all reduce tasks=2997248
+	Map-Reduce Framework
+		Map input records=3
+		Map output records=12
+		Map output bytes=75
+		Map output materialized bytes=111
+		Input split bytes=174
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=8
+		Reduce shuffle bytes=111
+		Reduce input records=12
+		Reduce output records=8
+		Spilled Records=24
+		Shuffled Maps =2
+		Failed Shuffles=0
+		Merged Map outputs=2
+		GC time elapsed (ms)=239
+		CPU time spent (ms)=1120
+		Physical memory (bytes) snapshot=581603328
+		Virtual memory (bytes) snapshot=7619264512
+		Total committed heap usage (bytes)=398663680
+		Peak Map Physical memory (bytes)=229322752
+		Peak Map Virtual memory (bytes)=2538258432
+		Peak Reduce Physical memory (bytes)=125341696
+		Peak Reduce Virtual memory (bytes)=2542747648
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters 
+		Bytes Read=77
+	File Output Format Counters 
+		Bytes Written=52
+2023-08-09 12:38:49,910 INFO streaming.StreamJob: Output directory: /me/output3
+hdoop@admin123-VirtualBox:~$ hdfs dfs -ls /me/output3
+Found 2 items
+-rw-r--r--   1 hdoop supergroup          0 2023-08-09 12:38 /me/output3/_SUCCESS
+-rw-r--r--   1 hdoop supergroup         52 2023-08-09 12:38 /me/output3/part-00000
+hdoop@admin123-VirtualBox:~$ hdfs dfs -cat /me/output3/part-00000
+Hello	1
+are	1
+do	2
+health	1
+how	3
+is	1
+you	2
+your	1
+hdoop@admin123-VirtualBox:~$ 

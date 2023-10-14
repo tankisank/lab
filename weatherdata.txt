@@ -1,0 +1,12 @@
+january, 10, 29,
+february, 14, 20,
+march, 22, 30,
+april,33,37,
+may,40,46,
+june, 37,40,
+july,30,35,
+august, 30, 33,
+september, 32, 37,
+october, 29,35,
+november, 25, 29, 
+december, 20, 25
